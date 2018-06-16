@@ -46,6 +46,7 @@ class App extends Component {
     this.matchValueChanged = this.matchValueChanged.bind(this);
     this.orderValueChanged = this.orderValueChanged.bind(this);
     this.openDialog = this.openDialog.bind(this);
+    this.onGoButton = this.onGoButton.bind(this);
   }
 
   createDict(secondaryFiles) {
@@ -147,6 +148,27 @@ class App extends Component {
     }
   }
 
+  onGoButton() {
+    if (this.state.path === '') {
+      dialog.showMessageBox({ message: 'Please select a folder first', type: 'info' });
+    } else {
+      const filedict = this.state.fileDict;
+      const secondaryFiles = [];
+      for (let i = 1; i < this.state.secondaryFiles.length + 1; i++) {
+        for (const file in filedict) {
+          if (filedict[file].orderNumber === i.toString()) {
+            console.log(filedict[file].orderNumber, i);
+            const newFile = {};
+            newFile[filedict[file].fileName] = filedict[file].matchType === 'match' ? 'm' : 'nm';
+            secondaryFiles.push(newFile);
+          }
+        }
+      }
+      const sentFiles = JSON.stringify(secondaryFiles);
+      console.log(sentFiles);
+    }
+  }
+
   render() {
     return (
       <div className="App pa3">
@@ -191,6 +213,12 @@ class App extends Component {
           onOrderValueChange={this.orderValueChanged}
           resetKey={this.state.resetKey}
         />
+        <br />
+        <div className="center">
+          <button className="f6 link dim ba ph3 pv1 mb2 bg-green white" onClick={this.onGoButton}>
+            GO
+          </button>
+        </div>
       </div>
     );
   }
