@@ -16,6 +16,17 @@ class File {
   }
 }
 
+function checkIfCompare(folderPath) {
+  const files = fs.readdirSync(String(folderPath));
+  for (const file of files) {
+    if (file.startsWith('compare')) {
+      console.log('compare', file);
+      return true;
+    }
+  }
+  return false;
+}
+
 // const allFiles = ["hello", "world", "shushu"];
 
 class App extends Component {
@@ -101,27 +112,37 @@ class App extends Component {
     });
     const fastaFiles = [];
     const files = fs.readdirSync(String(folderPath));
-    for (const file of files) {
-      if (nodePath.extname(file) === '.fasta') {
-        fastaFiles.push(file);
+    if (checkIfCompare(folderPath) === false) {
+      for (const file of files) {
+        if (nodePath.extname(file) === '.fasta') {
+          fastaFiles.push(file);
+        }
       }
-    }
-    if (fastaFiles.length < 2) {
-      console.log('too few fasta files');
+      if (fastaFiles.length < 2) {
+        dialog.showMessageBox({
+          message: `The folder: "${folderPath}" needs to have at least 2 ".fasta" files`,
+          type: 'warning',
+        });
+      } else {
+        const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
+        const newFileDict = this.createDict(newSecondary);
+        this.setState(
+          {
+            secondaryFiles: newSecondary,
+            primaryFile: fastaFiles[0],
+            allFiles: fastaFiles,
+            fileDict: newFileDict,
+          },
+          () => {
+            console.log(this.state);
+          },
+        );
+      }
     } else {
-      const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
-      const newFileDict = this.createDict(newSecondary);
-      this.setState(
-        {
-          secondaryFiles: newSecondary,
-          primaryFile: fastaFiles[0],
-          allFiles: fastaFiles,
-          fileDict: newFileDict,
-        },
-        () => {
-          console.log(this.state);
-        },
-      );
+      dialog.showMessageBox({
+        message: `The folder: "${folderPath}" contains a folder/file name "compare_", please remove this folder/file before choosing this location again`,
+        type: 'warning',
+      });
     }
   }
 
