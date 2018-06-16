@@ -111,40 +111,42 @@ class App extends Component {
     const folderPath = dialog.showOpenDialog({
       properties: ['openDirectory'],
     });
-    const fastaFiles = [];
-    const files = fs.readdirSync(String(folderPath));
-    if (checkIfCompare(folderPath) === false) {
-      for (const file of files) {
-        if (nodePath.extname(file) === '.fasta') {
-          fastaFiles.push(file);
+    if (folderPath !== undefined) {
+      const fastaFiles = [];
+      const files = fs.readdirSync(String(folderPath));
+      if (checkIfCompare(folderPath) === false) {
+        for (const file of files) {
+          if (nodePath.extname(file) === '.fasta') {
+            fastaFiles.push(file);
+          }
         }
-      }
-      if (fastaFiles.length < 2) {
+        if (fastaFiles.length < 2) {
+          dialog.showMessageBox({
+            message: `The folder: "${folderPath}" needs to have at least 2 ".fasta" files`,
+            type: 'warning',
+          });
+        } else {
+          const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
+          const newFileDict = this.createDict(newSecondary);
+          this.setState(
+            {
+              secondaryFiles: newSecondary,
+              primaryFile: fastaFiles[0],
+              allFiles: fastaFiles,
+              fileDict: newFileDict,
+              path: folderPath,
+            },
+            () => {
+              console.log(this.state);
+            },
+          );
+        }
+      } else {
         dialog.showMessageBox({
-          message: `The folder: "${folderPath}" needs to have at least 2 ".fasta" files`,
+          message: `The folder: "${folderPath}" contains a folder/file name "compare_", please remove this folder/file before choosing this location again`,
           type: 'warning',
         });
-      } else {
-        const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
-        const newFileDict = this.createDict(newSecondary);
-        this.setState(
-          {
-            secondaryFiles: newSecondary,
-            primaryFile: fastaFiles[0],
-            allFiles: fastaFiles,
-            fileDict: newFileDict,
-            path: folderPath,
-          },
-          () => {
-            console.log(this.state);
-          },
-        );
       }
-    } else {
-      dialog.showMessageBox({
-        message: `The folder: "${folderPath}" contains a folder/file name "compare_", please remove this folder/file before choosing this location again`,
-        type: 'warning',
-      });
     }
   }
 
@@ -158,7 +160,8 @@ class App extends Component {
         for (const file in filedict) {
           if (filedict[file].orderNumber === i.toString()) {
             console.log(filedict[file].orderNumber, i);
-            secondaryFiles[filedict[file].fileName] = filedict[file].matchType === 'match' ? 'm' : 'nm';
+            secondaryFiles[filedict[file].fileName] =
+              filedict[file].matchType === 'match' ? 'm' : 'nm';
           }
         }
       }
@@ -182,7 +185,7 @@ class App extends Component {
             Select a Folder:
           </label>
           <button
-            className="f6 link dim ba ph3 pv1 mb2 dib black"
+            className="f6 link dim ba ph3 pv1 mb2 dib bg-blue white"
             href="#0"
             id="pathChoose"
             onClick={this.openDialog}
