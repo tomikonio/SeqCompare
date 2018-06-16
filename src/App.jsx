@@ -4,6 +4,9 @@ import React, { Component } from "react";
 import Table from "../react-gui/src/Table";
 import DropdownTable from "../react-gui/src/DropdownTable";
 // import './Center.css';
+const { dialog } = require("electron").remote;
+const fs = require("fs");
+const nodePath = require("path");
 
 class File {
   constructor(fileName, matchType, orderNumber) {
@@ -13,7 +16,7 @@ class File {
   }
 }
 
-const allFiles = ["hello", "world", "shushu"];
+//const allFiles = ["hello", "world", "shushu"];
 
 class App extends Component {
   constructor(props) {
@@ -21,15 +24,18 @@ class App extends Component {
     this.state = {
       // path: "",
       // Need to change this and the secondary one later when connected with the backend.
-      primaryFile: allFiles[0],
-      secondaryFiles: this.calcSecondery(),
-      fileDict: this.createDict(this.calcSecondery()),
-      resetKey: "1"
+      allFiles: [],
+      primaryFile: "",
+      secondaryFiles: [],
+      fileDict: {},
+      resetKey: "1",
+      primaryReset: '1',
     };
 
     this.primaryFileSelect = this.primaryFileSelect.bind(this);
     this.matchValueChanged = this.matchValueChanged.bind(this);
     this.orderValueChanged = this.orderValueChanged.bind(this);
+    this.openDialog = this.openDialog.bind(this);
   }
 
   createDict(secondaryFiles) {
@@ -40,9 +46,9 @@ class App extends Component {
     return fileDict;
   }
 
-  calcSecondery(primaryFile = allFiles[0]) {
-    let index = allFiles.indexOf(primaryFile);
-    let newSecondary = [...allFiles];
+  calcSecondery(primaryFile = this.state.allFiles[0]) {
+    let index = this.state.allFiles.indexOf(primaryFile);
+    let newSecondary = [...this.state.allFiles];
     newSecondary.splice(index, 1);
     return newSecondary;
   }
@@ -72,7 +78,7 @@ class App extends Component {
         newFileDict[file] = new File(
           filename,
           newFileDict[file].matchType,
-          orderNumber,
+          orderNumber
         );
       }
     }
@@ -90,12 +96,36 @@ class App extends Component {
         secondaryFiles: secondaryCopy,
         primaryFile,
         fileDict: newFileDict,
-        resetKey: newResetKey,
+        resetKey: newResetKey
       },
       () => {
         console.log(this.state.fileDict);
       }
     );
+  }
+
+  openDialog() {
+    const folderPath = dialog.showOpenDialog({
+      properties: ["openDirectory"]
+    });
+    const newResetKey = this.state.primaryReset + "1";
+    const fastaFiles = [];
+    const files = fs.readdirSync(String(folderPath));
+    for (const file of files) {
+      if (nodePath.extname(file) === ".fasta") {
+        fastaFiles.push(file);
+      }
+    }
+    if (fastaFiles.length < 2) {
+      console.log("too few fasta files");
+    } else {
+      this.setState({
+        primaryFile: fastaFiles[0],
+        allFiles: fastaFiles,
+        secondaryFiles: this.calcSecondery(fastaFiles[0]),
+        primaryReset: newResetKey,
+      });
+    }
   }
 
   render() {
@@ -116,6 +146,7 @@ class App extends Component {
             className="f6 link dim ba ph3 pv1 mb2 dib black"
             href="#0"
             id="pathChoose"
+            onClick={this.openDialog}
           >
             Browse...
           </button>
@@ -126,10 +157,10 @@ class App extends Component {
             Select a primary file:
           </label>
           <DropdownTable
-            selectOptions={allFiles}
+            selectOptions={this.state.allFiles}
             onValueChange={this.primaryFileSelect}
             id="primary"
-            resetKey="0"
+            resetKey={this.state.primaryReset}
           />
         </div>
         <br />
