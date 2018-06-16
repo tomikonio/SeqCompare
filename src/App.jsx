@@ -153,14 +153,14 @@ class App extends Component {
       dialog.showMessageBox({ message: 'Please select a folder first', type: 'info' });
     } else {
       const filedict = this.state.fileDict;
-      const secondaryFiles = [];
+      const secondaryFiles = {};
       for (let i = 1; i < this.state.secondaryFiles.length + 1; i++) {
         for (const file in filedict) {
           if (filedict[file].orderNumber === i.toString()) {
             console.log(filedict[file].orderNumber, i);
-            const newFile = {};
-            newFile[filedict[file].fileName] = filedict[file].matchType === 'match' ? 'm' : 'nm';
-            secondaryFiles.push(newFile);
+            //const newFile = {};
+            secondaryFiles[filedict[file].fileName] = filedict[file].matchType === 'match' ? 'm' : 'nm';
+            //secondaryFiles.push(newFile);
           }
         }
       }
