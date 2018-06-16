@@ -158,9 +158,7 @@ class App extends Component {
         for (const file in filedict) {
           if (filedict[file].orderNumber === i.toString()) {
             console.log(filedict[file].orderNumber, i);
-            //const newFile = {};
             secondaryFiles[filedict[file].fileName] = filedict[file].matchType === 'match' ? 'm' : 'nm';
-            //secondaryFiles.push(newFile);
           }
         }
       }
