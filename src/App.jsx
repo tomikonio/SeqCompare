@@ -33,7 +33,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // path: "",
+      path: '',
       // Need to change this and the secondary one later when connected with the backend.
       allFiles: [],
       primaryFile: '',
@@ -132,6 +132,7 @@ class App extends Component {
             primaryFile: fastaFiles[0],
             allFiles: fastaFiles,
             fileDict: newFileDict,
+            path: folderPath,
           },
           () => {
             console.log(this.state);
@@ -169,6 +170,9 @@ class App extends Component {
             Browse...
           </button>
         </div>
+        <p>
+          Selected Folder: <i>{this.state.path}</i>
+        </p>
         <br />
         <div className="center">
           <label htmlFor="primary" className="pa1">
