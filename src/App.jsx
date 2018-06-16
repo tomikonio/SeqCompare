@@ -1,12 +1,12 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 // import logo from './logo.svg';
 // import './App.css';
-import Table from "../react-gui/src/Table";
-import DropdownTable from "../react-gui/src/DropdownTable";
+import Table from '../react-gui/src/Table';
+import DropdownTable from '../react-gui/src/DropdownTable';
 // import './Center.css';
-const { dialog } = require("electron").remote;
-const fs = require("fs");
-const nodePath = require("path");
+const { dialog } = require('electron').remote;
+const fs = require('fs');
+const nodePath = require('path');
 
 class File {
   constructor(fileName, matchType, orderNumber) {
@@ -16,7 +16,7 @@ class File {
   }
 }
 
-//const allFiles = ["hello", "world", "shushu"];
+// const allFiles = ["hello", "world", "shushu"];
 
 class App extends Component {
   constructor(props) {
@@ -25,11 +25,10 @@ class App extends Component {
       // path: "",
       // Need to change this and the secondary one later when connected with the backend.
       allFiles: [],
-      primaryFile: "",
+      primaryFile: '',
       secondaryFiles: [],
       fileDict: {},
-      resetKey: "1",
-      primaryReset: '1',
+      resetKey: '1',
     };
 
     this.primaryFileSelect = this.primaryFileSelect.bind(this);
@@ -41,14 +40,14 @@ class App extends Component {
   createDict(secondaryFiles) {
     const fileDict = {};
     for (const filename of secondaryFiles) {
-      fileDict[filename] = new File(filename, "match", "1");
+      fileDict[filename] = new File(filename, 'match', '1');
     }
     return fileDict;
   }
 
-  calcSecondery(primaryFile = this.state.allFiles[0]) {
-    let index = this.state.allFiles.indexOf(primaryFile);
-    let newSecondary = [...this.state.allFiles];
+  calcSecondery(primaryFile = this.state.allFiles[0], allFiles = this.state.allFiles) {
+    const index = allFiles.indexOf(primaryFile);
+    const newSecondary = [...allFiles];
     newSecondary.splice(index, 1);
     return newSecondary;
   }
@@ -58,15 +57,11 @@ class App extends Component {
     const newFileDict = Object.assign({}, this.state.fileDict);
     for (const file in newFileDict) {
       if (newFileDict[file].fileName === filename) {
-        newFileDict[file] = new File(
-          filename,
-          matchType,
-          newFileDict[file].orderNumber
-        );
+        newFileDict[file] = new File(filename, matchType, newFileDict[file].orderNumber);
       }
     }
     this.setState({ fileDict: newFileDict }, () => {
-      console.log("filedict: ", this.state.fileDict);
+      console.log('filedict: ', this.state.fileDict);
     });
   }
 
@@ -75,56 +70,58 @@ class App extends Component {
     const newFileDict = Object.assign({}, this.state.fileDict);
     for (const file in newFileDict) {
       if (newFileDict[file].fileName === filename) {
-        newFileDict[file] = new File(
-          filename,
-          newFileDict[file].matchType,
-          orderNumber
-        );
+        newFileDict[file] = new File(filename, newFileDict[file].matchType, orderNumber);
       }
     }
     this.setState({ fileDict: newFileDict }, () => {
-      console.log("filedict: ", this.state.fileDict);
+      console.log('filedict: ', this.state.fileDict);
     });
   }
 
   primaryFileSelect(primaryFile) {
     const secondaryCopy = this.calcSecondery(primaryFile);
     const newFileDict = this.createDict(secondaryCopy);
-    const newResetKey = this.state.resetKey + "1";
+    const newResetKey = `${this.state.resetKey}1`;
     this.setState(
       {
         secondaryFiles: secondaryCopy,
         primaryFile,
         fileDict: newFileDict,
-        resetKey: newResetKey
+        resetKey: newResetKey,
       },
       () => {
         console.log(this.state.fileDict);
-      }
+      },
     );
   }
 
   openDialog() {
     const folderPath = dialog.showOpenDialog({
-      properties: ["openDirectory"]
+      properties: ['openDirectory'],
     });
-    const newResetKey = this.state.primaryReset + "1";
     const fastaFiles = [];
     const files = fs.readdirSync(String(folderPath));
     for (const file of files) {
-      if (nodePath.extname(file) === ".fasta") {
+      if (nodePath.extname(file) === '.fasta') {
         fastaFiles.push(file);
       }
     }
     if (fastaFiles.length < 2) {
-      console.log("too few fasta files");
+      console.log('too few fasta files');
     } else {
-      this.setState({
-        primaryFile: fastaFiles[0],
-        allFiles: fastaFiles,
-        secondaryFiles: this.calcSecondery(fastaFiles[0]),
-        primaryReset: newResetKey,
-      });
+      const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
+      const newFileDict = this.createDict(newSecondary);
+      this.setState(
+        {
+          secondaryFiles: newSecondary,
+          primaryFile: fastaFiles[0],
+          allFiles: fastaFiles,
+          fileDict: newFileDict,
+        },
+        () => {
+          console.log(this.state);
+        },
+      );
     }
   }
 
@@ -160,7 +157,6 @@ class App extends Component {
             selectOptions={this.state.allFiles}
             onValueChange={this.primaryFileSelect}
             id="primary"
-            resetKey={this.state.primaryReset}
           />
         </div>
         <br />
