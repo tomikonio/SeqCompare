@@ -167,6 +167,21 @@ class App extends Component {
       }
       const sentFiles = JSON.stringify(secondaryFiles);
       console.log(sentFiles);
+      // const spawn = require("child_process").spawn;
+      // const pyProg = spawn('python3', ['../projectSce/run_script.py', this.state.primaryFile, sentFiles, this.state.path]);
+      const PythonShell = require('python-shell');
+      const pythonOptions = {
+        pythonPath: '/home/igor/Git Projects/projectElectronReact/projectSce/venv/bin/python3',
+        // pythonPath: '/usr/bin/env python3',
+        scriptPath: '/home/igor/Git Projects/projectElectronReact/projectSce',
+        args: [this.state.primaryFile, sentFiles, this.state.path],
+      };
+
+      PythonShell.run('run_compare.py', pythonOptions, (err, results) => {
+        if (err) throw err;
+        // results is an array consisting of messages collected during execution
+        console.log('results: %j', results);
+      });
     }
   }
 
