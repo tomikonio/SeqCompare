@@ -124,6 +124,7 @@ class App extends Component {
           dialog.showMessageBox({
             message: `The folder: "${folderPath}" needs to have at least 2 ".fasta" files`,
             type: 'warning',
+            buttons: ['OK'],
           });
         } else {
           const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
@@ -145,6 +146,7 @@ class App extends Component {
         dialog.showMessageBox({
           message: `The folder: "${folderPath}" contains a folder/file name "compare_", please remove this folder/file before choosing this location again`,
           type: 'warning',
+          buttons: ['OK'],
         });
       }
     }
@@ -152,7 +154,7 @@ class App extends Component {
 
   onGoButton() {
     if (this.state.path === '') {
-      dialog.showMessageBox({ message: 'Please select a folder first', type: 'info' });
+      dialog.showMessageBox({ message: 'Please select a folder first', type: 'info', buttons: ['OK'], });
     } else {
       const filedict = this.state.fileDict;
       const secondaryFiles = {};
