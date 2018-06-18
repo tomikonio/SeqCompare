@@ -248,8 +248,8 @@ class App extends Component {
           <button className="f6 link dim ba ph3 pv1 mb2 bg-green white" onClick={this.onGoButton}>
             GO
           </button>
-          {this.state.running === true ? 'Running....' : null}
         </div>
+        {this.state.running === true ? <p>Running....</p> : null}
       </div>
     );
   }
