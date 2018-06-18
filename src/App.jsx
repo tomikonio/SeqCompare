@@ -4,6 +4,8 @@ import React, { Component } from 'react';
 import Table from '../react-gui/src/Table';
 import DropdownTable from '../react-gui/src/DropdownTable';
 // import './Center.css';
+import PythonShell from 'python-shell';
+
 const { dialog } = require('electron').remote;
 const fs = require('fs');
 const nodePath = require('path');
@@ -40,6 +42,7 @@ class App extends Component {
       secondaryFiles: [],
       fileDict: {},
       resetKey: '1',
+      running: false,
     };
 
     this.primaryFileSelect = this.primaryFileSelect.bind(this);
@@ -154,7 +157,11 @@ class App extends Component {
 
   onGoButton() {
     if (this.state.path === '') {
-      dialog.showMessageBox({ message: 'Please select a folder first', type: 'info', buttons: ['OK'], });
+      dialog.showMessageBox({
+        message: 'Please select a folder first',
+        type: 'info',
+        buttons: ['OK'],
+      });
     } else {
       const filedict = this.state.fileDict;
       const secondaryFiles = {};
@@ -168,10 +175,10 @@ class App extends Component {
         }
       }
       const sentFiles = JSON.stringify(secondaryFiles);
+      this.setState({ running: true });
       console.log(sentFiles);
       // const spawn = require("child_process").spawn;
       // const pyProg = spawn('python3', ['../projectSce/run_script.py', this.state.primaryFile, sentFiles, this.state.path]);
-      const PythonShell = require('python-shell');
       const pythonOptions = {
         pythonPath: '/home/igor/Git Projects/projectElectronReact/projectSce/venv/bin/python3',
         // pythonPath: '/usr/bin/env python3',
@@ -179,10 +186,15 @@ class App extends Component {
         args: [this.state.primaryFile, sentFiles, this.state.path],
       };
 
-      PythonShell.run('run_compare.py', pythonOptions, (err, results) => {
+      const shellPy = PythonShell.run('run_compare.py', pythonOptions, (err, results) => {
         if (err) throw err;
         // results is an array consisting of messages collected during execution
         console.log('results: %j', results);
+      });
+
+      shellPy.on('close', (message) => {
+        console.log(message);
+        this.setState({ running: false });
       });
     }
   }
@@ -236,6 +248,7 @@ class App extends Component {
           <button className="f6 link dim ba ph3 pv1 mb2 bg-green white" onClick={this.onGoButton}>
             GO
           </button>
+          {this.state.running === true ? 'Running....' : null}
         </div>
       </div>
     );
