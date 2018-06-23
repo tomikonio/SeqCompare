@@ -4,6 +4,8 @@ import React, { Component } from 'react';
 import Table from '../react-gui/src/Table';
 import DropdownTable from '../react-gui/src/DropdownTable';
 // import './Center.css';
+import PythonShell from 'python-shell';
+
 const { dialog } = require('electron').remote;
 const fs = require('fs');
 const nodePath = require('path');
@@ -40,12 +42,14 @@ class App extends Component {
       secondaryFiles: [],
       fileDict: {},
       resetKey: '1',
+      running: false,
     };
 
     this.primaryFileSelect = this.primaryFileSelect.bind(this);
     this.matchValueChanged = this.matchValueChanged.bind(this);
     this.orderValueChanged = this.orderValueChanged.bind(this);
     this.openDialog = this.openDialog.bind(this);
+    this.onGoButton = this.onGoButton.bind(this);
   }
 
   createDict(secondaryFiles) {
@@ -110,39 +114,87 @@ class App extends Component {
     const folderPath = dialog.showOpenDialog({
       properties: ['openDirectory'],
     });
-    const fastaFiles = [];
-    const files = fs.readdirSync(String(folderPath));
-    if (checkIfCompare(folderPath) === false) {
-      for (const file of files) {
-        if (nodePath.extname(file) === '.fasta') {
-          fastaFiles.push(file);
+    if (folderPath !== undefined) {
+      const fastaFiles = [];
+      const files = fs.readdirSync(String(folderPath));
+      if (checkIfCompare(folderPath) === false) {
+        for (const file of files) {
+          if (nodePath.extname(file) === '.fasta') {
+            fastaFiles.push(file);
+          }
+        }
+        if (fastaFiles.length < 2) {
+          dialog.showMessageBox({
+            message: `The folder: "${folderPath}" needs to have at least 2 ".fasta" files`,
+            type: 'warning',
+            buttons: ['OK'],
+          });
+        } else {
+          const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
+          const newFileDict = this.createDict(newSecondary);
+          this.setState(
+            {
+              secondaryFiles: newSecondary,
+              primaryFile: fastaFiles[0],
+              allFiles: fastaFiles,
+              fileDict: newFileDict,
+              path: folderPath,
+            },
+            () => {
+              console.log(this.state);
+            },
+          );
+        }
+      } else {
+        dialog.showMessageBox({
+          message: `The folder: "${folderPath}" contains a folder/file name "compare_", please remove this folder/file before choosing this location again`,
+          type: 'warning',
+          buttons: ['OK'],
+        });
+      }
+    }
+  }
+
+  onGoButton() {
+    if (this.state.path === '') {
+      dialog.showMessageBox({
+        message: 'Please select a folder first',
+        type: 'info',
+        buttons: ['OK'],
+      });
+    } else {
+      const filedict = this.state.fileDict;
+      const secondaryFiles = {};
+      for (let i = 1; i < this.state.secondaryFiles.length + 1; i++) {
+        for (const file in filedict) {
+          if (filedict[file].orderNumber === i.toString()) {
+            console.log(filedict[file].orderNumber, i);
+            secondaryFiles[filedict[file].fileName] =
+              filedict[file].matchType === 'match' ? 'm' : 'nm';
+          }
         }
       }
-      if (fastaFiles.length < 2) {
-        dialog.showMessageBox({
-          message: `The folder: "${folderPath}" needs to have at least 2 ".fasta" files`,
-          type: 'warning',
-        });
-      } else {
-        const newSecondary = this.calcSecondery(fastaFiles[0], fastaFiles);
-        const newFileDict = this.createDict(newSecondary);
-        this.setState(
-          {
-            secondaryFiles: newSecondary,
-            primaryFile: fastaFiles[0],
-            allFiles: fastaFiles,
-            fileDict: newFileDict,
-            path: folderPath,
-          },
-          () => {
-            console.log(this.state);
-          },
-        );
-      }
-    } else {
-      dialog.showMessageBox({
-        message: `The folder: "${folderPath}" contains a folder/file name "compare_", please remove this folder/file before choosing this location again`,
-        type: 'warning',
+      const sentFiles = JSON.stringify(secondaryFiles);
+      this.setState({ running: true });
+      console.log(sentFiles);
+      // const spawn = require("child_process").spawn;
+      // const pyProg = spawn('python3', ['../projectSce/run_script.py', this.state.primaryFile, sentFiles, this.state.path]);
+      const pythonOptions = {
+        pythonPath: '/home/igor/Git Projects/projectElectronReact/projectSce/venv/bin/python3',
+        // pythonPath: '/usr/bin/env python3',
+        scriptPath: '/home/igor/Git Projects/projectElectronReact/projectSce',
+        args: [this.state.primaryFile, sentFiles, this.state.path],
+      };
+
+      const shellPy = PythonShell.run('run_compare.py', pythonOptions, (err, results) => {
+        if (err) throw err;
+        // results is an array consisting of messages collected during execution
+        console.log('results: %j', results);
+      });
+
+      shellPy.on('close', (message) => {
+        console.log(message);
+        this.setState({ running: false });
       });
     }
   }
@@ -162,7 +214,7 @@ class App extends Component {
             Select a Folder:
           </label>
           <button
-            className="f6 link dim ba ph3 pv1 mb2 dib black"
+            className="f6 link dim ba ph3 pv1 mb2 dib bg-blue white"
             href="#0"
             id="pathChoose"
             onClick={this.openDialog}
@@ -191,6 +243,13 @@ class App extends Component {
           onOrderValueChange={this.orderValueChanged}
           resetKey={this.state.resetKey}
         />
+        <br />
+        <div className="center">
+          <button className="f6 link dim ba ph3 pv1 mb2 bg-green white" onClick={this.onGoButton}>
+            GO
+          </button>
+        </div>
+        {this.state.running === true ? <p>Running....</p> : null}
       </div>
     );
   }
