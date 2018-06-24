@@ -177,12 +177,9 @@ class App extends Component {
       const sentFiles = JSON.stringify(secondaryFiles);
       this.setState({ running: true });
       console.log(sentFiles);
-      // const spawn = require("child_process").spawn;
-      // const pyProg = spawn('python3', ['../projectSce/run_script.py', this.state.primaryFile, sentFiles, this.state.path]);
       const pythonOptions = {
-        pythonPath: '/home/igor/Git Projects/projectElectronReact/projectSce/venv/bin/python3',
-        // pythonPath: '/usr/bin/env python3',
-        scriptPath: '/home/igor/Git Projects/projectElectronReact/projectSce',
+        pythonPath: `${__dirname}/../projectSce/venv/bin/python3`,
+        scriptPath: `${__dirname}/../projectSce`,
         args: [this.state.primaryFile, sentFiles, this.state.path],
       };
 
