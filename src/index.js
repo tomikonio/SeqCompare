@@ -72,6 +72,17 @@ const template = [
       },
     ],
   },
+  {
+    label: 'Tools',
+    submenu: [
+      {
+        label: 'Open DevTools',
+        click: () => {
+          mainWindow.webContents.openDevTools();
+        },
+      },
+    ],
+  },
 ];
 
 const menu = Menu.buildFromTemplate(template);

@@ -2,7 +2,7 @@
   "name": "projectelectronreact",
   "productName": "projectelectronreact",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "A tool for comparing nucleotide sequences",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
