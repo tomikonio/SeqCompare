@@ -1,4 +1,7 @@
 # SeqCompare
+## Explanation about the submodules
+The `projectSCE` submodule contains the python code.  
+The `reactGUI` submodule contains the React files.
 ## How to
 ### Installation
 The ```.deb``` file provided will install the project on the target machine - must be x64 architecture.
