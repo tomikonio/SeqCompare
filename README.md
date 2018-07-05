@@ -12,7 +12,7 @@ Input the following in the terminal
 * ```git submodule init```
 * ```git submodule update```
 * ```npm install```
-* ```cd projectSCE```
+* ```cd projectSce```
 * ```mkdir venv```
 * ```python3 -m venv venv```
 * ```pip3 install -r requirements.txt```
