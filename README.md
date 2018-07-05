@@ -4,7 +4,7 @@ The `projectSce` submodule contains the python code.
 The `react-gui` submodule contains the React files.
 ## How to
 ### Installation
-The ```.deb``` file provided will install the project on the target machine - must be x64 architecture.
+The ```.deb``` files provided will install the project on the target machine.
 ### Cloning the repository
 Input the following in the terminal
 * ```git clone https://github.com/tomikonio/SeqCompare.git```
