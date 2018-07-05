@@ -15,6 +15,7 @@ Input the following in the terminal
 * ```cd projectSce```
 * ```mkdir venv```
 * ```python3 -m venv venv```
+* ```source venv/bin/activate```
 * ```pip3 install -r requirements.txt```
 * ```cd ..```
 ### Runing the code
