@@ -1,6 +1,6 @@
 [submodule "react-gui"]
 	path = react-gui
-	url = https://gitlab.com/projectSCEgui/react-gui.git
+	url = https://github.com/tomikonio/SeqCompare-react-gui.git
 [submodule "projectSce"]
 	path = projectSce
 	url = https://gitlab.com/projectSCEgui/projectSce.git
