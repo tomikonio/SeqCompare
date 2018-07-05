@@ -1,5 +1,5 @@
-import { app, BrowserWindow } from 'electron';
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import { app, BrowserWindow, Menu } from 'electron';
+// import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { enableLiveReload } from 'electron-compile';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -15,16 +15,17 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    title: 'SeqCompare',
   });
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
   // Open the DevTools.
-  if (isDevMode) {
-    await installExtension(REACT_DEVELOPER_TOOLS);
-    mainWindow.webContents.openDevTools();
-  }
+  // if (isDevMode) {
+  //   await installExtension(REACT_DEVELOPER_TOOLS);
+  //   mainWindow.webContents.openDevTools();
+  // }
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -59,3 +60,30 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+const template = [
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'Close',
+        click: () => {
+          app.quit();
+        },
+      },
+    ],
+  },
+  {
+    label: 'Tools',
+    submenu: [
+      {
+        label: 'Open DevTools',
+        click: () => {
+          mainWindow.webContents.openDevTools();
+        },
+      },
+    ],
+  },
+];
+
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
