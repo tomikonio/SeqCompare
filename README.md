@@ -3,7 +3,9 @@
 The `projectSce` submodule contains the python code.  
 The `react-gui` submodule contains the React files.
 ### Screenshot
-![alt](https://lh6.googleusercontent.com/MCALI22rG7xfScEWc_m5nAEqE2RPYp4VNBy-1pDkIuSHZ6bRGZL-9swOiZglGj7aT9vuQe2Wjpl3_-y90GSk=w1920-h943-rw)
+<img src="https://lh6.googleusercontent.com/MCALI22rG7xfScEWc_m5nAEqE2RPYp4VNBy-1pDkIuSHZ6bRGZL-9swOiZglGj7aT9vuQe2Wjpl3_-y90GSk=w1920-h943-rw" width="600">
+
+
 ## How to
 ### Installation
 The ```.deb``` files provided in the [releases](https://github.com/tomikonio/SeqCompare/releases) will install the project on the target machine.
