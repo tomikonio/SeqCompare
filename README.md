@@ -3,8 +3,7 @@
 The `projectSce` submodule contains the python code.  
 The `react-gui` submodule contains the React files.
 ### Screenshot
-<img src="https://lh6.googleusercontent.com/MCALI22rG7xfScEWc_m5nAEqE2RPYp4VNBy-1pDkIuSHZ6bRGZL-9swOiZglGj7aT9vuQe2Wjpl3_-y90GSk=w1920-h943-rw" width="600">
-
+<img src="https://i.imgur.com/somobMG.png" width="600">
 
 ## How to
 ### Installation
